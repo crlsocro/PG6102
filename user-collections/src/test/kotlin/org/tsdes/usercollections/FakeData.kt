@@ -29,6 +29,7 @@ object FakeData {
             add(CardDto(cardId = "c08", rarity = Rarity.GOLD))
             add(CardDto(cardId = "c09", rarity = Rarity.PLATINUM))
         }
+
         return dto
     }
 }
