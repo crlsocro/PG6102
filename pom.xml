@@ -7,6 +7,9 @@
     <modules>
         <module>cards-dto</module>
         <module>user-collections</module>
+        <module>scores</module>
+        <module>rest-exception</module>
+        <module>rests-dto</module>
     </modules>
     <groupId>org.tsdes</groupId>
     <artifactId>PG6102</artifactId>
@@ -289,6 +292,11 @@
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
                 <version>2.8.6</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>28.1-jre</version>
             </dependency>
             <dependency>
                 <groupId>javax.xml.bind</groupId>
