@@ -7,9 +7,6 @@
     <modules>
         <module>cards-dto</module>
         <module>user-collections</module>
-        <module>rest-dto</module>
-        <module>rest-exception</module>
-        <module>scoresA</module>
     </modules>
     <groupId>org.tsdes</groupId>
     <artifactId>PG6102</artifactId>
