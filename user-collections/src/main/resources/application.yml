@@ -10,7 +10,4 @@ spring:
     database: postgresql
     hibernate:
       ddl-auto: validate
-  mvc:
-    throwExceptionIfNoHandlerFound: true
-  resources:
-    add-mappings: false
+
