@@ -1,4 +1,6 @@
 package org.tsdes.cards
 
-object DtoConverter {
+object CardCollection {
+
+
 }
