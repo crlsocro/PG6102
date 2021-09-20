@@ -10,6 +10,7 @@
         <module>scores</module>
         <module>rest-exception</module>
         <module>rests-dto</module>
+        <module>cards</module>
     </modules>
     <groupId>org.tsdes</groupId>
     <artifactId>PG6102</artifactId>
