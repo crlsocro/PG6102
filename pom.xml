@@ -6,6 +6,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>cards-dto</module>
+        <module>card-images</module>
         <module>user-collections</module>
         <module>scores</module>
         <module>rest-exception</module>
