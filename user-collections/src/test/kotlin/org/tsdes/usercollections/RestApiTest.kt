@@ -1,42 +1,40 @@
 package org.tsdes.usercollections
 
+import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.common.ConsoleNotifier
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import io.restassured.RestAssured
 import io.restassured.RestAssured.given
 import io.restassured.http.ContentType
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.util.TestPropertyValues
 import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.context.ApplicationContextInitializer
+import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.annotation.Primary
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.tsdes.rests.dto.WrappedResponse
 import org.tsdes.usercollections.db.UserRepository
 import org.tsdes.usercollections.db.UserService
 import org.tsdes.usercollections.dto.Command
 import org.tsdes.usercollections.dto.PatchUserDto
-import org.tsdes.usercollections.model.Collection
+import wiremock.com.fasterxml.jackson.databind.ObjectMapper
 import javax.annotation.PostConstruct
 
-@Profile("RestAPITest")
-@Primary
-@Service
-class FakeCardService : CardService() {
-    override fun fetchData() {
-        val dto = FakeData.getCollectionDto()
-        super.collection = Collection(dto)
-    }
-}
 
-
-@ActiveProfiles("RestAPITest","test")
+@ActiveProfiles("test")
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ContextConfiguration(initializers = [(RestAPITest.Companion.Initializer::class)])
 internal class RestAPITest {
 
     @LocalServerPort
@@ -56,6 +54,43 @@ internal class RestAPITest {
         RestAssured.basePath = "/api/user-collections"
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails()
     }
+
+    companion object {
+
+        private lateinit var wiremockServer: WireMockServer
+
+        @BeforeAll
+        @JvmStatic
+        fun initClass() {
+            wiremockServer = WireMockServer(WireMockConfiguration.wireMockConfig().dynamicPort().notifier(ConsoleNotifier(true)))
+            wiremockServer.start()
+
+
+            val dto = WrappedResponse(code = 200, data = FakeData.getCollectionDto()).validated()
+            val json = ObjectMapper().writeValueAsString(dto)
+
+            wiremockServer.stubFor(
+                WireMock.get(WireMock.urlMatching("/api/cards/collection_.*"))
+                    .willReturn(WireMock.aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json; charset=utf-8")
+                        .withBody(json)))
+        }
+
+        @AfterAll
+        @JvmStatic
+        fun tearDown() {
+            wiremockServer.stop()
+        }
+
+        class Initializer : ApplicationContextInitializer<ConfigurableApplicationContext> {
+            override fun initialize(configurableApplicationContext: ConfigurableApplicationContext) {
+                TestPropertyValues.of("cardServiceAddress: localhost:${wiremockServer.port()}")
+                    .applyTo(configurableApplicationContext.environment)
+            }
+        }
+    }
+
 
 
     @BeforeEach
@@ -84,6 +119,7 @@ internal class RestAPITest {
 
         assertTrue(userRepository.existsById(id))
     }
+
     @Test
     fun testBuyCard() {
 
@@ -157,5 +193,4 @@ internal class RestAPITest {
         assertTrue(after.coins > coins)
         Assertions.assertEquals(n - 1, after.ownedCards.sumBy { it.numberOfCopies })
     }
-
 }
