@@ -12,6 +12,8 @@
         <module>rest-exception</module>
         <module>rests-dto</module>
         <module>cards</module>
+        <module>api-gateway</module>
+        <module>e2e-tests</module>
     </modules>
     <groupId>org.tsdes</groupId>
     <artifactId>PG6102</artifactId>
