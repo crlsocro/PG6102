@@ -1,10 +1,12 @@
 package org.tsdes.e2etests
 
 import io.restassured.RestAssured
+import io.restassured.RestAssured.given
 import io.restassured.http.ContentType
 import org.awaitility.Awaitility
 import org.hamcrest.CoreMatchers
-import org.hamcrest.Matchers
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.Matchers.greaterThan
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -20,11 +22,14 @@ import java.util.concurrent.TimeUnit
 @Testcontainers
 class RestIT {
 
+
     companion object {
+
         init {
             RestAssured.enableLoggingOfRequestAndResponseIfValidationFails()
             RestAssured.port = 80
         }
+
         class KDockerComposeContainer(id: String, path: File) : DockerComposeContainer<KDockerComposeContainer>(id, path)
 
         @Container
@@ -49,11 +54,11 @@ class RestIT {
                 .ignoreExceptions()
                 .until {
 
-                    RestAssured.given().baseUri("http://${env.getServiceHost("discovery", 8500)}")
+                    given().baseUri("http://${env.getServiceHost("discovery", 8500)}")
                         .port(env.getServicePort("discovery", 8500))
                         .get("/v1/agent/services")
                         .then()
-                        .body("size()", CoreMatchers.equalTo(5))
+                        .body("size()", equalTo(5))
 
                     true
                 }
@@ -66,10 +71,10 @@ class RestIT {
             .pollInterval(Duration.ofSeconds(10))
             .ignoreExceptions()
             .until {
-                RestAssured.given().get("/api/cards/collection_v1_000")
+                given().get("/api/cards/collection_v1_000")
                     .then()
                     .statusCode(200)
-                    .body("data.cards.size", Matchers.greaterThan(10))
+                    .body("data.cards.size", greaterThan(10))
                 true
             }
     }
@@ -80,11 +85,11 @@ class RestIT {
             .pollInterval(Duration.ofSeconds(10))
             .ignoreExceptions()
             .until {
-                RestAssured.given().accept(ContentType.JSON)
+                given().accept(ContentType.JSON)
                     .get("/api/scores")
                     .then()
                     .statusCode(200)
-                    .body("data.list.size()", Matchers.greaterThan(0))
+                    .body("data.list.size()", greaterThan(0))
                 true
             }
     }
@@ -98,16 +103,16 @@ class RestIT {
 
                 val id = "foo_testCreateUser_" + System.currentTimeMillis()
 
-                RestAssured.given().get("/api/user-collections/$id")
+                given().get("/api/user-collections/$id")
                     .then()
                     .statusCode(404)
 
 
-                RestAssured.given().put("/api/user-collections/$id")
+                given().put("/api/user-collections/$id")
                     .then()
                     .statusCode(201)
 
-                RestAssured.given().get("/api/user-collections/$id")
+                given().get("/api/user-collections/$id")
                     .then()
                     .statusCode(200)
 
