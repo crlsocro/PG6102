@@ -7,6 +7,7 @@ import org.awaitility.Awaitility
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.Matchers.greaterThan
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -34,7 +35,7 @@ class RestIT {
 
         @Container
         @JvmField
-        val env = KDockerComposeContainer("card-game", File("../docker-compose.yml"))
+        val env = KDockerComposeContainer("PG6102", File("../docker-compose.yml"))
             .withExposedService("discovery", 8500,
                 Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(240)))
             .withLogConsumer("cards_0") { print("[CARD_0] " + it.utf8String) }
@@ -62,6 +63,11 @@ class RestIT {
 
                     true
                 }
+        }
+        @AfterAll
+        @JvmStatic
+        fun afterTests() {
+            env.stop()
         }
     }
 

@@ -15,6 +15,7 @@
         <module>api-gateway</module>
         <module>e2e-tests</module>
         <module>auth</module>
+        <module>frontend</module>
     </modules>
     <groupId>org.tsdes</groupId>
     <artifactId>PG6102</artifactId>

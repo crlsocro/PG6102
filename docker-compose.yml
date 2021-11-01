@@ -11,6 +11,14 @@ services:
     depends_on:
       - discovery
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+
+  rabbitmq:
+    image: "rabbitmq:3"
+
   discovery:
     image: "consul:1.8"
     environment:
