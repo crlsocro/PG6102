@@ -42,6 +42,7 @@ services:
       - api-gateway
       - redis
       - postgres-auth
+      - rabbitmq
 
   cards_0:
     build:
@@ -68,6 +69,7 @@ services:
       - discovery
       - postgres-user-collections
       - auth
+      - rabbitmq
 
 
   scores:
@@ -78,6 +80,7 @@ services:
       - api-gateway
       - discovery
       - postgres-scores
+      - rabbitmq
 
 
 

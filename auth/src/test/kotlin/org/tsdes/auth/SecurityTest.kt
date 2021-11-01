@@ -48,12 +48,18 @@ class SecurityTest {
         @JvmField
         val redis = KGenericContainer("redis:latest").withExposedPorts(6379)
 
+        @Container
+        @JvmField
+        val rabbitMQ = KGenericContainer("rabbitmq:3").withExposedPorts(5672)
+
         class Initializer : ApplicationContextInitializer<ConfigurableApplicationContext> {
             override fun initialize(configurableApplicationContext: ConfigurableApplicationContext) {
 
                 TestPropertyValues
                     .of("spring.redis.host=${redis.containerIpAddress}",
-                        "spring.redis.port=${redis.getMappedPort(6379)}")
+                        "spring.redis.port=${redis.getMappedPort(6379)}",
+                        "spring.rabbitmq.host=" + rabbitMQ.containerIpAddress,
+                        "spring.rabbitmq.port=" + rabbitMQ.getMappedPort(5672))
                     .applyTo(configurableApplicationContext.environment);
             }
         }
